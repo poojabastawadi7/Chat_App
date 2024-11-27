@@ -1,0 +1,12 @@
+=>the event name should be same to send and get info
+socket.on and socket.emit
+
+* socket.on(event, listener)
+
+
+* Usually we do not emit on the server , on the client we do
+> Listen on server and then inside we emit 
+
+* We can do entire io ckt emit or socket emit or we can brodcast
+    > if we do io emit all of the users will get the response, i mean if by a client(form) we got any response and then i need to emit to entire ckt including me.(real time)
+    > broadcast mean except mesocket other sockets on ckt will get the response
