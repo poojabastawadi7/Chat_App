@@ -6,12 +6,15 @@ import { io } from "socket.io-client";
 import { Container, Typography, TextField, Button, Box, Stack } from '@mui/material';
 
 const App = () => {
-  const socket = useMemo(() => io("http://localhost:3000"), []); //when state value changes the socket is getting changed(component is rerendering) so useMemo so that only on refresh or rerun socket may change
+  const socket = useMemo(() => io("http://localhost:3000", {
+    withCredentials: true,
+  }), []); //when state value changes the socket is getting changed(component is rerendering) so useMemo so that only on refresh or rerun socket may change
 
   const [message, setMessage] = useState("");
   const [room, setRoom] = useState("");
   const [socketId, setSocketID] = useState("");
   const [messages, setMessages] = useState([]);
+  const [roomName, setRoomName] = useState("")
 
 
   console.log(messages);
@@ -40,6 +43,14 @@ const App = () => {
     
   },[])
 
+  const roomJoinHandler = (e) => {
+    e.preventDefault();
+    socket.emit("room-join", roomName);
+    
+    
+    setRoomName("")
+    
+  };
    
   const handleSendMessage = (e) => {
     e.preventDefault();
@@ -47,6 +58,7 @@ const App = () => {
     
     
     setMessage("")
+    setRoom("")
     
   };
 
@@ -57,6 +69,34 @@ const App = () => {
       <Typography variant="h4" gutterBottom>
        Welcome To my ChatBot
       </Typography>
+
+      <Box component="form" noValidate autoComplete="off">
+        <Typography variant="h6" gutterBottom>
+       {socketId}
+        </Typography>
+        <TextField
+          label="Room Name"
+          placeholder="Write room name..."
+          multiline
+          rows={4}
+          fullWidth
+          variant="outlined"
+          sx={{ mb: 3 }}
+          value={roomName}
+          onChange={(e) => setRoomName(e.target.value)}
+        />
+        
+        <Button
+          variant="contained"
+          color="primary"
+          fullWidth
+          onClick={roomJoinHandler}
+        >
+          Join 
+        </Button>
+       
+      </Box>
+
       <Box component="form" noValidate autoComplete="off">
         <Typography variant="h6" gutterBottom>
        {socketId}

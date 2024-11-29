@@ -15,5 +15,8 @@ io.broadcast.emit()
 
 * to send to particular room io.to(room).emit() and socket.to(room).emit  both works the same way
 
-*
+* socket.join()  > If user (socket) joined particular room and if he sends msg then other users present in that room will get the msg sent and vice-versa.
+ex. if both joined a same room , then both will get msgs sent by both.
+
+* MiddleWare > io.use((socket, next) => { middleware task ; next()})
 
