@@ -3,15 +3,29 @@ import { useState } from 'react';
 import { useMemo } from 'react';
 import { useEffect } from 'react';
 import { io } from "socket.io-client";
-import { Container, Typography, TextField, Button, Box } from '@mui/material';
+import { Container, Typography, TextField, Button, Box, Stack } from '@mui/material';
 
 const App = () => {
   const socket = useMemo(() => io("http://localhost:3000"), []); //when state value changes the socket is getting changed(component is rerendering) so useMemo so that only on refresh or rerun socket may change
 
-  const [message, setMessage] = useState("")
+  const [message, setMessage] = useState("");
+  const [room, setRoom] = useState("");
+  const [socketId, setSocketID] = useState("");
+  const [messages, setMessages] = useState([]);
+
+
+  console.log(messages);
+  
   useEffect(() => {
     socket.on("connect", () => {
+      setSocketID(socket.id)
       console.log("Socket Connected", socket.id);
+      
+    })
+
+    socket.on("receive-message", (data) => {
+      console.log(data);
+      setMessages((messages) => [...messages, data])
       
     })
 
@@ -29,7 +43,9 @@ const App = () => {
    
   const handleSendMessage = (e) => {
     e.preventDefault();
-    socket.emit("message", message)
+    socket.emit("message", {message, room});
+    
+    
     setMessage("")
     
   };
@@ -42,6 +58,9 @@ const App = () => {
        Welcome To my ChatBot
       </Typography>
       <Box component="form" noValidate autoComplete="off">
+        <Typography variant="h6" gutterBottom>
+       {socketId}
+        </Typography>
         <TextField
           label="Type your message"
           placeholder="Write something..."
@@ -53,6 +72,17 @@ const App = () => {
           value={message}
           onChange={(e) => setMessage(e.target.value)}
         />
+        <TextField
+          label="Room No."
+          placeholder="Type room no here..."
+          multiline
+          rows={4}
+          fullWidth
+          variant="outlined"
+          sx={{ mb: 3 }}
+          value={room}
+          onChange={(e) => setRoom(e.target.value)}
+        />
         <Button
           variant="contained"
           color="primary"
@@ -61,7 +91,16 @@ const App = () => {
         >
           Send
         </Button>
+       
       </Box>
+      <Stack>
+      {messages && messages.map((m, i) => 
+      <Typography variant="h6" key={i}  gutterBottom>
+       {m}
+      </Typography>
+      )}
+      </Stack>
+      
     </Container>
   );
 
